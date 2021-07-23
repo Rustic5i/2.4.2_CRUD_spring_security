@@ -1,4 +1,4 @@
-package web.config;
+package web.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import web.config.handler.LoginSuccessHandler;
+import web.config.security.handler.LoginSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
