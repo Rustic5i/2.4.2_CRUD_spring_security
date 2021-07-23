@@ -17,4 +17,6 @@ public interface DAO {
 
     User getUserById(Long id);
 
+    User findByUsername(String username);
+
 }

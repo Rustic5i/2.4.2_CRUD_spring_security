@@ -3,10 +3,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import web.model.User;
 import web.myExcetion.SaveObjectException;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
+import javax.persistence.*;
 import java.util.List;
 
 @Repository
@@ -25,24 +22,16 @@ public class HibernateDAO implements DAO {
         } catch (PersistenceException e) {
             throw new SaveObjectException(e.getMessage());
         }
-
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void updateUser(User updateUser) throws SaveObjectException {
-        User user = null;
-        try {
-            user = entityManager.createQuery("SELECT user from User user where user.username = :username", User.class)
-                    .setParameter("username", updateUser.getUsername())
-                    .getSingleResult();
-        }catch (NoResultException e){
-            e.getStackTrace();
-            entityManager.merge(updateUser);
-        }
+        User user = findByUsername(updateUser.getUsername());
         if (user != null) {
             throw new SaveObjectException("Exception: User с таким именем уже существует");
         }
+        entityManager.merge(updateUser);
     }
 
     @Override
@@ -61,5 +50,16 @@ public class HibernateDAO implements DAO {
 
     public User getUserById(Long id) {
         return entityManager.find(User.class, id);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        try {
+            return entityManager.createQuery("SELECT user FROM User user WHERE user.username = :username", User.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }
