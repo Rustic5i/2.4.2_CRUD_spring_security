@@ -1,10 +1,12 @@
 package web.dao;
 
+import web.model.Role;
 import web.model.User;
 import web.myExcetion.SaveObjectException;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
+import java.util.Set;
 
 public interface DAO {
     void saveUser(User user) throws SaveObjectException;
@@ -19,4 +21,5 @@ public interface DAO {
 
     User findByUsername(String username);
 
+    Set<Role> getSetRoles(String... roles);
 }

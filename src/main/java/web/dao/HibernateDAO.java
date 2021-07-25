@@ -1,12 +1,18 @@
 package web.dao;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import web.model.Role;
 import web.model.User;
 import web.myExcetion.SaveObjectException;
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
+@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 public class HibernateDAO implements DAO {
 
     @PersistenceContext()
@@ -15,11 +21,12 @@ public class HibernateDAO implements DAO {
     @Override
     @Transactional(rollbackFor = {Exception.class}) //мы говорим Spring, эй, spring,
     // если ты видишь какое-либо исключение, Runtime exception или Checked exception,
-    // пожалуйста, откатите транзакцию (не сохраняйте запись в БД)
+    // пожалуйста, откатите транзакцию (не сохраняйте запись в БД) Аминь !
     public void saveUser(User user) throws SaveObjectException {
         try {
             entityManager.persist(user);
         } catch (PersistenceException e) {
+            System.out.println("ОШИБКА СОХРАНЕНИЯ "+e);
             throw new SaveObjectException(e.getMessage());
         }
     }
@@ -61,5 +68,16 @@ public class HibernateDAO implements DAO {
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    @Override
+    @Transactional
+    public Set<Role> getSetRoles(String... roles) {
+        Set<Role> roleSet = new HashSet<>();
+        for (String role : roles) {
+            roleSet.add(entityManager.createQuery("SELECT role FROM Role role WHERE role.authority=:role"
+                    ,Role.class).setParameter("role",role).getSingleResult());
+        }
+        return roleSet;
     }
 }

@@ -10,8 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import web.dao.DAO;
 import web.model.User;
 
-//@Component
+@Service
 public class UserService implements UserDetailsService {
+
     private DAO dao;
 
     @Autowired
@@ -22,11 +23,15 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User  user = dao.findByUsername(username);
+        User  user = findByUsername(username);
         if (user == null){
             throw new UsernameNotFoundException(String.format("User '%s' not found ", username));
         }
         return new org.springframework.security.core.userdetails.User(user.getUsername(),
                 user.getPassword(), user.getAuthorities());
+    }
+
+    private User findByUsername (String username){
+        return dao.findByUsername(username);
     }
 }

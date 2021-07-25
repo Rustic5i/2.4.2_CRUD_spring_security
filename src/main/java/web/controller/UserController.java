@@ -2,18 +2,19 @@ package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import web.dao.DAO;
+import web.model.Role;
 import web.model.User;
 import web.myExcetion.SaveObjectException;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/")
@@ -55,13 +56,14 @@ public class UserController {
 
     @PostMapping("/people")
     public String creat(@ModelAttribute("newUser") @Valid User user,
-                        BindingResult bindingResult, Model model) {
+                        BindingResult bindingResult,Model model,@ModelAttribute("listRoles[]") String... role) {
         model.addAttribute("people", dao.getAllUsers());
         if (bindingResult.hasErrors()) {
             return "view/index";
         }
         try {
-
+            Set<Role> roleSet = dao.getSetRoles(role);
+            user.setRoles(roleSet);
             dao.saveUser(user);
         } catch (SaveObjectException e) {
             e.getMessage();
