@@ -1,6 +1,10 @@
 package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -12,6 +16,7 @@ import web.model.User;
 import web.myExcetion.SaveObjectException;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -48,13 +53,13 @@ public class AdminController {
         return new User();
     }
 
-    @GetMapping("/people")
+    @GetMapping("/admin")
     public String index(Model model) {
         model.addAttribute("people", dao.getAllUsers());
         return "view/index";
     }
 
-    @PostMapping("/people")
+    @PostMapping("/admin")
     public String creat(@ModelAttribute("newUser") @Valid User user,
                         BindingResult bindingResult, Model model,
                         @RequestParam(name = "listRoles[]", required = false) String... roles) {
@@ -73,22 +78,22 @@ public class AdminController {
             model.addAttribute("error", "User с такими именем уже существует");
             return "view/index";
         }
-        return "redirect:/people";
+        return "redirect:/admin";
     }
 
-    @DeleteMapping("/people/{id}")
+    @DeleteMapping("/admin/{id}")
     public String deletePerson(@PathVariable("id") Long id) {
         dao.removeUserById(id);
-        return "redirect:/people";
+        return "redirect:/admin";
     }
 
-    @GetMapping("/people/{id}/edit")
+    @GetMapping("/admin/{id}/edit")
     public String edit(@ModelAttribute("id") Long id, Model model) {
         model.addAttribute("user", dao.getUserById(id));
         return "view/edit";
     }
 
-    @PatchMapping("/people/{id}")
+    @PatchMapping("/admin/{id}")
     public String updatePerson(@ModelAttribute("user") @Valid User updateuser,
                                BindingResult bindingResult,
                                @RequestParam(name = "listRoles[]",required = false) String... roles) {
@@ -105,6 +110,12 @@ public class AdminController {
                     "Exception: The user with the name " + updateuser.getUsername() + " already exists");
             return "view/edit";
         }
-        return "redirect:/people";
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/user")
+    public String index(Model model, Principal principal) {
+        model.addAttribute("people", dao.findByUsername(principal.getName()));
+        return "view/index";
     }
 }

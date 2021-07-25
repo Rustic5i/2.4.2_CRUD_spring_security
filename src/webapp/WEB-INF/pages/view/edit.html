@@ -5,7 +5,7 @@
     <title>Update people</title>
 </head>
 <body>
-<form th:method="patch" th:action="@{/people/{id}(id=${user.getId()})}" th:object="${user}">
+<form th:method="patch" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">
     <label for="id">Id</label>
     <input readonly type="number" th:field="*{id}" id="id" placeholder="id">
     <br/>
@@ -30,6 +30,11 @@
     </select>
     <br/>
     <input type="submit" value="Update person">
+    <br/>
 </form>
+<br/>
+<a href="/logout">
+    <button>Exit</button>
+</a>
 </body>
 </html>

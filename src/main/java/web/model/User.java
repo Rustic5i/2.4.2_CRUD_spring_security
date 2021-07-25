@@ -129,22 +129,22 @@ public class User implements UserDetails {
     @Override
     public boolean isAccountNonExpired() { //срок Действия Учетной Записи Не Истек
         return false;
-    }
+    } // срок Действия Учетной Записи Не Истек
 
     @Override
     public boolean isAccountNonLocked() { //не Заблокирована Ли Учетная запись
         return false;
-    }
+    } // не Заблокирована Ли Учетная запись
 
     @Override
     public boolean isCredentialsNonExpired() { //не Истек Ли Срок Действия Учетных Данных
         return false;
-    }
+    } // не Истек Ли Срок Действия Учетных Данных
 
     @Override
     public boolean isEnabled() { // включено
         return false;
-    }
+    } //ВКЛЮЧЕН
 
     @Override
     public boolean equals(Object o) {
