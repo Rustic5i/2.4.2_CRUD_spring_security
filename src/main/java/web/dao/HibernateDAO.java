@@ -1,4 +1,5 @@
 package web.dao;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
@@ -6,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import web.model.Role;
 import web.model.User;
 import web.myExcetion.SaveObjectException;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +28,7 @@ public class HibernateDAO implements DAO {
         try {
             entityManager.persist(user);
         } catch (PersistenceException e) {
-            System.out.println("ОШИБКА СОХРАНЕНИЯ "+e);
+            System.out.println("ОШИБКА СОХРАНЕНИЯ " + e);
             throw new SaveObjectException(e.getMessage());
         }
     }
@@ -35,7 +37,7 @@ public class HibernateDAO implements DAO {
     @Transactional(rollbackFor = {Exception.class})
     public void updateUser(User updateUser) throws SaveObjectException {
         User user = findByUsername(updateUser.getUsername());
-        if (user != null) {
+        if ( user != null && user.getId() != updateUser.getId()) {
             throw new SaveObjectException("Exception: User с таким именем уже существует");
         }
         entityManager.merge(updateUser);
@@ -76,7 +78,7 @@ public class HibernateDAO implements DAO {
         Set<Role> roleSet = new HashSet<>();
         for (String role : roles) {
             roleSet.add(entityManager.createQuery("SELECT role FROM Role role WHERE role.authority=:role"
-                    ,Role.class).setParameter("role",role).getSingleResult());
+                    , Role.class).setParameter("role", role).getSingleResult());
         }
         return roleSet;
     }

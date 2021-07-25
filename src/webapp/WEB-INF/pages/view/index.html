@@ -54,11 +54,11 @@
     <input type="text" th:field="*{password}" id="password"/>
     <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</div>
     <br/>
-    <select name="listRoles[]">
-        <option  value="ROLE_ADMIN">ADMIN</option>
-        <option  value="ROLE_USER">USER</option>
-        <!-- THE REST OF THE OPTIONS -->
-    </select>
+        <select multiple name="listRoles[]" required="required">
+            <!--        <option disabled> </option>-->
+            <option value="ROLE_ADMIN">ADMIN</option>
+            <option value="ROLE_USER">USER</option>
+        </select>
     <br/>
     <input type="submit" value="Create!"/>
 </form>
