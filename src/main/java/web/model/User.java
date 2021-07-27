@@ -55,10 +55,6 @@ public class User implements UserDetails {
         this.age = age;
         this.email = email;
     }
-//    public void addRole(Role newRole) {
-//        roles.add(newRole);
-//        newRole.getUser().add(this);
-//    }
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
@@ -99,6 +95,10 @@ public class User implements UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     @Override

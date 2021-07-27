@@ -28,7 +28,6 @@ public class HibernateDAO implements DAO {
         try {
             entityManager.persist(user);
         } catch (PersistenceException e) {
-            System.out.println("ОШИБКА СОХРАНЕНИЯ " + e);
             throw new SaveObjectException(e.getMessage());
         }
     }
@@ -37,9 +36,11 @@ public class HibernateDAO implements DAO {
     @Transactional(rollbackFor = {Exception.class})
     public void updateUser(User updateUser) throws SaveObjectException {
         User user = findByUsername(updateUser.getUsername());
-        if ( user != null && user.getId() != updateUser.getId()) {
+
+        if (user != null && user.getId() != updateUser.getId()) {
             throw new SaveObjectException("Exception: User с таким именем уже существует");
         }
+
         entityManager.merge(updateUser);
     }
 

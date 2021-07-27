@@ -14,6 +14,7 @@ import web.dao.DAO;
 import web.model.Role;
 import web.model.User;
 import web.myExcetion.SaveObjectException;
+import web.service.IUserService;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -25,11 +26,11 @@ import java.util.Set;
 @RequestMapping("/")
 public class AdminController {
 
-    private DAO dao;
+    private IUserService userService;
 
     @Autowired
-    public AdminController(DAO dao) {
-        this.dao = dao;
+    public AdminController(IUserService userService) {
+        this.userService = userService;
     }
 
     @RequestMapping(value = "hello", method = RequestMethod.GET)
@@ -55,7 +56,7 @@ public class AdminController {
 
     @GetMapping("/admin")
     public String index(Model model) {
-        model.addAttribute("people", dao.getAllUsers());
+        model.addAttribute("people", userService.getAllUsers());
         return "view/index";
     }
 
@@ -63,19 +64,18 @@ public class AdminController {
     public String creat(@ModelAttribute("newUser") @Valid User user,
                         BindingResult bindingResult, Model model,
                         @RequestParam(name = "listRoles[]", required = false) String... roles) {
-        model.addAttribute("people", dao.getAllUsers());
+         model.addAttribute("people", userService.getAllUsers());
         if (bindingResult.hasErrors()) {
             return "view/index";
         }
         try {
-            Set<Role> roleSet = dao.getSetRoles(roles);
+            Set<Role> roleSet = userService.getSetRoles(roles);
             user.setRoles(roleSet);
-            dao.saveUser(user);
+            userService.registrationUser(user);
         } catch (SaveObjectException e) {
             e.getMessage();
             bindingResult.rejectValue("username", "SaveObjectException",
                     "Exception: The user with the name " + user.getUsername() + " already exists");
-            model.addAttribute("error", "User с такими именем уже существует");
             return "view/index";
         }
         return "redirect:/admin";
@@ -83,27 +83,27 @@ public class AdminController {
 
     @DeleteMapping("/admin/{id}")
     public String deletePerson(@PathVariable("id") Long id) {
-        dao.removeUserById(id);
+        userService.removeUserById(id);
         return "redirect:/admin";
     }
 
     @GetMapping("/admin/{id}/edit")
     public String edit(@ModelAttribute("id") Long id, Model model) {
-        model.addAttribute("user", dao.getUserById(id));
+        model.addAttribute("user", userService.getUserById(id));
         return "view/edit";
     }
 
     @PatchMapping("/admin/{id}")
     public String updatePerson(@ModelAttribute("user") @Valid User updateuser,
                                BindingResult bindingResult,
-                               @RequestParam(name = "listRoles[]",required = false) String... roles) {
+                               @RequestParam(name = "listRoles[]", required = false) String... roles) {
         if (bindingResult.hasErrors()) {
             return "view/edit";
         }
         try {
-            Set<Role> roleSet = dao.getSetRoles(roles);
+            Set<Role> roleSet = userService.getSetRoles(roles);
             updateuser.setRoles(roleSet);
-            dao.updateUser(updateuser);
+            userService.updateUser(updateuser);
         } catch (SaveObjectException e) {
             e.getMessage();
             bindingResult.rejectValue("username", "SaveObjectException",
@@ -111,11 +111,5 @@ public class AdminController {
             return "view/edit";
         }
         return "redirect:/admin";
-    }
-
-    @GetMapping("/user")
-    public String index(Model model, Principal principal) {
-        model.addAttribute("people", dao.findByUsername(principal.getName()));
-        return "view/index";
     }
 }
