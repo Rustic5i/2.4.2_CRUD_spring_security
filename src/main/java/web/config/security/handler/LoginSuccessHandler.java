@@ -14,6 +14,9 @@ import java.util.Set;
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     // Spring Security использует объект Authentication, пользователя авторизованной сессии.
+    //LoginSuccessHandler это обработчик успешной аутентификации.
+    // В этом классе мы указываем что должно произойти после успешной аутентификации пользователя.
+    // Например перекинуть на его домашние страницу
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse,

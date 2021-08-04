@@ -1,10 +1,13 @@
 package web.model;
 
-import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -13,12 +16,17 @@ import java.util.*;
 
 @Entity
 @Table(name = "users")
+@DynamicUpdate(value = true) // По умолчанию Hibernate если мы обновляем только одно поле.
+// То он все равно обновляет все поля. Он делает это, потому что с нами параллельно может кто то работать с этим обьектом,
+// и мы могли получить не то что хотели. По этому Hibernate дает нам возможность вк флажки. Мы говорим. Меняй только те поля,
+// которые я обновляю
+//@DynamicInsert(value = true)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NaturalId(mutable=true)
+    @NaturalId(mutable = true)
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 3, max = 30, message = "Name should be between 2 and 30 characters")
     @Column
@@ -37,14 +45,13 @@ public class User implements UserDetails {
     @NotEmpty(message = "password should not be empty")
     private String password;
 
-
-//    @ManyToMany(fetch = FetchType.EAGER
-//            ,cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
-   // CascadeType.PERSIST, - сохраняет обект вместе с его зависимостью (если такой зависимости еще нет в бд)
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE})
+    // @BatchSize(size = 5)
+    //  @Fetch(value = FetchMode.SELECT)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "users_role"
-            ,joinColumns = @JoinColumn(name = "user_id")
-            ,inverseJoinColumns = @JoinColumn(name = "role_id"))
+            , joinColumns = @JoinColumn(name = "user_id")
+            , inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
     public User() {

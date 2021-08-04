@@ -49,6 +49,10 @@ public class HibernateConfig {
         props.put("hibernate.show_sql", environment.getProperty("hibernate.show_sql"));
         props.put("hibernate.hbm2ddl.auto", environment.getProperty("hibernate.hbm2ddl.auto"));
         props.put("hibernate.dialect", environment.getProperty("hibernate.dialect"));
+        props.put("hibernate.format_sql",environment.getProperty("hibernate.format_sql"));
+        props.put("hibernate.use_sql_comments",environment.getProperty("hibernate.use_sql_comments"));
+//        props.put("hibernate.enable_lazy_load_no_trans",
+//                environment.getProperty("hibernate.enable_lazy_load_no_trans")); //  Является анти-модель и не желательно использовать
 
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setJpaVendorAdapter(vendorAdapter()); //??

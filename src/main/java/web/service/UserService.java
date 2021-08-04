@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +22,18 @@ public class UserService implements UserDetailsService, IUserService {
 
     private DAO dao;
 
+    private PasswordEncoder encoder;
+
     @Autowired
-    public UserService(DAO dao) {
+    public UserService(DAO dao, PasswordEncoder encoder) {
         this.dao = dao;
+        this.encoder = encoder;
     }
 
+
+
+
     @Override
-    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User  user = findByUsername(username);
         if (user == null){
@@ -43,7 +49,6 @@ public class UserService implements UserDetailsService, IUserService {
 
     @Override
     public void registrationUser(User newUser) throws SaveObjectException {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         User user = new User();
         user.setUsername(newUser.getUsername());
         user.setAge(newUser.getAge());

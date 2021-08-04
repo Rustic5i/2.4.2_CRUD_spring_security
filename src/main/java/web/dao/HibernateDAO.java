@@ -4,14 +4,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.expression.Sets;
 import web.model.Role;
 import web.model.User;
 import web.myExcetion.SaveObjectException;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Scope(proxyMode = ScopedProxyMode.INTERFACES)
@@ -51,11 +51,15 @@ public class HibernateDAO implements DAO {
         if (user != null) {
             entityManager.remove(user);
         }
+
     }
 
     @Override
+    @Transactional
     public List<User> getAllUsers() {
-        return entityManager.createQuery("SELECT user FROM User user", User.class).getResultList();
+        List<User> users = entityManager.createQuery("SELECT user FROM User user", User.class).getResultList();
+        System.out.println(users.get(1).getRoles()); // и тут поменять
+        return users;
     }
 
     public User getUserById(Long id) {
@@ -63,24 +67,29 @@ public class HibernateDAO implements DAO {
     }
 
     @Override
+    @Transactional
     public User findByUsername(String username) {
+        User user = new User();
         try {
-            return entityManager.createQuery("SELECT user FROM User user WHERE user.username = :username", User.class)
+           user = entityManager.createQuery("SELECT user FROM User user WHERE user.username = :username", User.class)
                     .setParameter("username", username)
                     .getSingleResult();
+           System.out.println(user.getAuthorities()); // тут поменять
         } catch (NoResultException e) {
             return null;
         }
+        return user;
     }
 
     @Override
     @Transactional
-    public Set<Role> getSetRoles(String... roles) {
-        Set<Role> roleSet = new HashSet<>();
-        for (String role : roles) {
-            roleSet.add(entityManager.createQuery("SELECT role FROM Role role WHERE role.authority=:role"
-                    , Role.class).setParameter("role", role).getSingleResult());
-        }
+    public Set<Role> getSetRoles(String... roles) { // Использование List  в параметрах HQL запроса
+        Set<Role> roleSet;
+        roleSet = entityManager
+                .createQuery("SELECT role FROM Role role WHERE role.authority IN (:roles)"
+                        , Role.class)
+                .setParameter("roles", Arrays.asList(roles))
+                .getResultStream().collect(Collectors.toSet());
         return roleSet;
     }
 }

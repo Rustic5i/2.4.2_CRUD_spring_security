@@ -81,9 +81,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**").hasAnyRole("USER","ADMIN") // только роль USER
                 .and()
                 .formLogin()
-                .successHandler(new LoginSuccessHandler())
+                .successHandler(new LoginSuccessHandler()) // LoginSuccessHandler это обработчик успешной аутентификации. В этом классе мы указываем что должно произойти после успешной аутентификации пользователя. Например перекинуть на его домашнию страницу
                 .and()
-                .logout().permitAll()
+                .logout().permitAll()//??
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login")
                 .and().csrf().disable();

@@ -17,12 +17,7 @@ public class Role implements GrantedAuthority {
     @Column
     private String authority;
 
-    //    @ManyToMany(fetch = FetchType.EAGER
-//            ,cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(name = "users_role"
-//            , joinColumns = @JoinColumn(name = "role_id")
-//            , inverseJoinColumns = @JoinColumn(name = "user_id"))
+
     @ManyToMany(mappedBy = "roles") //Если ассоциация двунаправленная, одна сторона должна
     // быть владельцем, а другая - обратным концом (т. Е. Она будет
     // проигнорирована при обновлении значений взаимосвязи в таблице ассоциаций):

@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import web.dao.DAO;
 import web.model.Role;
 import web.model.User;
@@ -112,4 +113,12 @@ public class AdminController {
         }
         return "redirect:/admin";
     }
+    ///////////////
+//    @GetMapping("/admin/{id}/edit") //ModelAndView
+//    public ModelAndView editt(@ModelAttribute("id") Long id, Model model) {
+//        model.addAttribute("user", userService.getUserById(id));
+//        return new ModelAndView("edit","user",userService.getUserById(id));
+//    }
+
+
 }
