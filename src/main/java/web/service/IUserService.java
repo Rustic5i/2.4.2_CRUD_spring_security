@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface IUserService {
+    User findByUsername(String username);
+
     void registrationUser(User newUser) throws SaveObjectException;
 
     List<User> getAllUsers();

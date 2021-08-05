@@ -1,12 +1,13 @@
 package web.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.dao.DAO;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS )
 public class UserService implements UserDetailsService, IUserService {
 
     private DAO dao;
@@ -31,9 +33,8 @@ public class UserService implements UserDetailsService, IUserService {
     }
 
 
-
-
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User  user = findByUsername(username);
         if (user == null){
@@ -42,12 +43,19 @@ public class UserService implements UserDetailsService, IUserService {
         return new org.springframework.security.core.userdetails.User(user.getUsername(),
                 user.getPassword(), user.getAuthorities());
     }
-
-    private User findByUsername (String username){
-        return dao.findByUsername(username);
+    @Override
+    @Transactional
+    public User findByUsername(String username){
+        User user = dao.findByUsername(username);
+        Hibernate.initialize(user.getAuthorities());
+        return user;
     }
 
+    //мы говорим Spring, эй, spring,
+    // если ты видишь какое-либо исключение, Runtime exception или Checked exception,
+    // пожалуйста, откатите транзакцию (не сохраняйте запись в БД) Аминь !
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void registrationUser(User newUser) throws SaveObjectException {
         User user = new User();
         user.setUsername(newUser.getUsername());
@@ -59,16 +67,19 @@ public class UserService implements UserDetailsService, IUserService {
     }
 
     @Override
+    @Transactional
     public List<User> getAllUsers() {
         return dao.getAllUsers();
     }
 
     @Override
+    @Transactional
     public Set<Role> getSetRoles(String... roles) {
         return dao.getSetRoles(roles);
     }
 
     @Override
+    @Transactional
     public void removeUserById(Long id) {
         dao.removeUserById(id);
     }
@@ -79,6 +90,7 @@ public class UserService implements UserDetailsService, IUserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void updateUser(User updateUser) throws SaveObjectException {
         dao.updateUser(updateUser);
     }
