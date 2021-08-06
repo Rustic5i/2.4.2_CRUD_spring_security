@@ -1,5 +1,6 @@
 package web.dao;
 
+import org.hibernate.Hibernate;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
@@ -52,7 +53,7 @@ public class HibernateDAO implements DAO {
     @Override
     public List<User> getAllUsers() {
         List<User> users = entityManager.createQuery("SELECT user FROM User user", User.class).getResultList();
-        System.out.println(users.get(1).getRoles()); // и тут поменять
+        Hibernate.initialize(users.get(1).getRoles());
         return users;
     }
 

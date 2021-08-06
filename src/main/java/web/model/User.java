@@ -45,8 +45,7 @@ public class User implements UserDetails {
     @NotEmpty(message = "password should not be empty")
     private String password;
 
-    // @BatchSize(size = 5)
-    //  @Fetch(value = FetchMode.SELECT)
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "users_role"
