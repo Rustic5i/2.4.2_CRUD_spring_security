@@ -27,12 +27,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.userService = userService;
     }
 
-    @Bean
-    public BeanNameAutoProxyCreator beanNameAutoProxyCreator(){
-        BeanNameAutoProxyCreator beanNameAutoProxyCreator = new BeanNameAutoProxyCreator();
-        beanNameAutoProxyCreator.setProxyTargetClass(true);
-        return beanNameAutoProxyCreator;
-    }
+//    @Bean
+//    public BeanNameAutoProxyCreator beanNameAutoProxyCreator(){
+//        BeanNameAutoProxyCreator beanNameAutoProxyCreator = new BeanNameAutoProxyCreator();
+//        beanNameAutoProxyCreator.setProxyTargetClass(true);
+//        return beanNameAutoProxyCreator;
+//    }
 //
 //    @Override
 //    public void configure(AuthenticationManagerBuilder auth) throws Exception {

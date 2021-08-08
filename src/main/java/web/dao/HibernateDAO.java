@@ -53,7 +53,6 @@ public class HibernateDAO implements DAO {
     @Override
     public List<User> getAllUsers() {
         List<User> users = entityManager.createQuery("SELECT user FROM User user", User.class).getResultList();
-        Hibernate.initialize(users.get(1).getRoles());
         return users;
     }
 

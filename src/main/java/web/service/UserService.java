@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS )
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserService implements UserDetailsService, IUserService {
 
     private DAO dao;
@@ -36,16 +36,17 @@ public class UserService implements UserDetailsService, IUserService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User  user = findByUsername(username);
-        if (user == null){
+        User user = findByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found ", username));
         }
         return new org.springframework.security.core.userdetails.User(user.getUsername(),
                 user.getPassword(), user.getAuthorities());
     }
+
     @Override
     @Transactional
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         User user = dao.findByUsername(username);
         Hibernate.initialize(user.getAuthorities());
         return user;
@@ -69,7 +70,12 @@ public class UserService implements UserDetailsService, IUserService {
     @Override
     @Transactional
     public List<User> getAllUsers() {
-        return dao.getAllUsers();
+        List<User> users = dao.getAllUsers();
+        if (users.size() == 0) {
+            return null;
+        }
+        Hibernate.initialize(users.get(0).getAuthorities());
+        return users;
     }
 
     @Override
